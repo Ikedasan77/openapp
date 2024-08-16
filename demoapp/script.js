@@ -40,100 +40,64 @@ const quizData = [
         correct: "d"
     },
     {
-        question: "(+7)+(-8)=",
+        question: "(+1)+(-7)-(+4)-(-9)=",
         a: "-1",
         b: "-2",
         c: "-3",
         d: "-4",
-        correct: "a "
+        correct: "a"
     },
     {
-        question: "(-6)+(+1)=",
-        a: "-6",
-        b: "-5",
-        c: "-4",
-        d: "-3",
+        question: "18-7+3=",
+        a: "14",
+        b: "13",
+        c: "12",
+        d: "15",
+        correct: "d"
+    },
+    {
+        question: "9-5+2=",
+        a: "7",
+        b: "6",
+        c: "5",
+        d: "4",
         correct: "b"
     },
     {
-        question: "9-(+6)=",
-        a: "7",
-        b: "5",
-        c: "3",
-        d: "1",
-        correct: "c"
-    },
-    {
-        question: "(-5)-(-5)=",
+        question: "20-10+5-15=",
         a: "0",
         b: "5",
         c: "-5",
         d: "-10",
-        correct: "a"
-    },
-    {
-        question: "(+5)-(+4)+(-7)-(-2)=",
-        a: "4",
-        b: "1",
-        c: "-1",
-        d: "-4",
-        correct: "d"
-    },
-    {
-        question: "(-7)×(+8)=",
-        a: "-56",
-        b: "+56",
-        c: "-1",
-        d: "+1",
-        correct: "a"
-    },
-    {
-        question: "(+6)÷(+1)=",
-        a: "-6",
-        b: "-1",
-        c: "+6",
-        d: "+7",
         correct: "c"
     },
     {
-        question: "9×(-3)=",
-        a: "-3",
-        b: "3",
-        c: "-27",
-        d: "27",
-        correct: "c"
-    },
-    {
-        question: "(-3)÷(-3)=",
-        a: "1",
-        b: "-1",
-        c: "-3",
-        d: "0",
-        correct: "a"
-    },
-    {
-        question: "(-2)×(+4)÷(-8)×(-2)=",
-        a: "2",
-        b: "1",
-        c: "0",
-        d: "-2",
-        correct: "d"
+        question: "50-25+30-10=",
+        a: "55",
+        b: "45",
+        c: "35",
+        d: "40",
+        correct: "b"
     }
 ];
 
+// クイズの表示と結果の表示に使用されるHTML要素を取得
 const quizContainer = document.getElementById('quiz');
 const resultsContainer = document.getElementById('results');
 const submitButton = document.getElementById('submit');
 const nextButton = document.getElementById('next');
+const nextSound = document.getElementById('nextSound'); // 効果音のオーディオ要素を取得
 
-let currentQuizData = [];
-let currentIndex = 0;
-const questionsPerSet = 5;
+let currentQuizData = []; // 現在表示されているクイズのデータ
+let currentIndex = 0; // 現在のクイズのインデックス
+const questionsPerSet = 5; // 一度に表示する問題の数
 
+// 次の問題セットを取得する関数
 function getNextQuestions() {
     return quizData.slice(currentIndex, currentIndex + questionsPerSet);
 }
 
+// クイズを構築して表示する関数
 function buildQuiz() {
     const output = [];
     currentQuizData = getNextQuestions();
@@ -141,6 +105,7 @@ function buildQuiz() {
     currentQuizData.forEach((currentQuestion, questionNumber) => {
         const answers = [];
 
+        // 現在の質問の選択肢を生成
         for (let letter in currentQuestion) {
             if (letter !== 'question' && letter !== 'correct') {
                 answers.push(
@@ -153,24 +118,29 @@ function buildQuiz() {
             }
         }
 
+        // 質問とその選択肢をoutputに追加
         output.push(
             `<div class="question">${currentQuestion.question}</div>
             <div class="answers">${answers.join('')}</div>`
         );
     });
 
+    // クイズをHTMLに表示
     quizContainer.innerHTML = output.join('');
 }
 
+// 結果を表示する関数
 function showResults() {
     const answerContainers = quizContainer.querySelectorAll('.answers');
     let numCorrect = 0;
 
+    // 各質問の回答をチェック
     currentQuizData.forEach((currentQuestion, questionNumber) => {
         const answerContainer = answerContainers[questionNumber];
         const selector = `input[name=question${questionNumber}]:checked`;
         const userAnswer = (answerContainer.querySelector(selector) || {}).value;
 
+        // 正解の場合、緑色に、不正解の場合、赤色にする
         if (userAnswer === currentQuestion.correct) {
             numCorrect++;
             answerContainers[questionNumber].style.color = 'green';
@@ -179,9 +149,11 @@ function showResults() {
         }
     });
 
+    // 結果をHTMLに表示
     resultsContainer.innerHTML = `${currentQuizData.length} 問中 ${numCorrect} 問正解しました。`;
 }
 
+// 次のクイズセットを表示する関数
 function nextQuiz() {
     currentIndex += questionsPerSet;
     if (currentIndex >= quizData.length) {
@@ -189,9 +161,13 @@ function nextQuiz() {
     }
     buildQuiz();
     resultsContainer.innerHTML = '';  // 前回の結果をクリア
+    nextSound.volume = 0.6;  // 音量を50%に設定
+    nextSound.play();  // 効果音を再生
 }
 
+// 初期クイズの表示
 buildQuiz();
 
+// ボタンにイベントリスナーを追加
 submitButton.addEventListener('click', showResults);
 nextButton.addEventListener('click', nextQuiz);
