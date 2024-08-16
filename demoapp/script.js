@@ -161,7 +161,7 @@ function nextQuiz() {
     }
     buildQuiz();
     resultsContainer.innerHTML = '';  // 前回の結果をクリア
-    nextSound.volume = 0.6;  // 音量を50%に設定
+    nextSound.volume = 0.5;  // 音量を50%に設定
     nextSound.play();  // 効果音を再生
 }
 
